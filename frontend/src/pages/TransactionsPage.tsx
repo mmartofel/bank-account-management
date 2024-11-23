@@ -6,20 +6,32 @@ import { TransactionFilters as Filters } from '../types/transaction';
 
 const defaultFilters: Filters = {
     page: 0,
-    size: 20
+    size: 20,
+    type: undefined,
+    status: undefined,
+    category: undefined,
+    startDate: null,
+    endDate: null,
+    minAmount: undefined,
+    maxAmount: undefined,
+    description: undefined,
+    accountId: undefined
 };
 
 export const TransactionsPage: React.FC = () => {
     const [filters, setFilters] = useState<Filters>(defaultFilters);
 
     const handleFilterChange = (newFilters: Filters) => {
+        console.log('Filters changed:', newFilters);
         setFilters({
-            ...newFilters,
-            page: 0 // Reset page when filters change
+            ...defaultFilters,  // Reset to default pagination
+            ...newFilters,      // Apply new filters
+            page: 0             // Reset page when filters change
         });
     };
 
     const handleResetFilters = () => {
+        console.log('Resetting filters to default');
         setFilters(defaultFilters);
     };
 
@@ -30,7 +42,7 @@ export const TransactionsPage: React.FC = () => {
                     Transactions
                 </Typography>
 
-                <Paper sx={{ mb: 3 }}>
+                <Paper sx={{ mb: 3, p: 2 }}>
                     <TransactionFilters
                         filters={filters}
                         onFilterChange={handleFilterChange}
@@ -38,7 +50,7 @@ export const TransactionsPage: React.FC = () => {
                     />
                 </Paper>
 
-                <TransactionList accountId={filters.accountId} />
+                <TransactionList filters={filters} />
             </Box>
         </Container>
     );

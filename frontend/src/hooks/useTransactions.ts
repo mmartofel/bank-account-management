@@ -7,11 +7,8 @@ interface UseTransactionsReturn {
     loading: boolean;
     error: Error | null;
     totalCount: number;
-    pageSize: number;
-    pageNumber: number;
     fetchTransactions: (filters: TransactionFilters) => Promise<void>;
     fetchTransactionById: (id: number) => Promise<Transaction>;
-    fetchAccountTransactions: (accountId: number, page?: number, size?: number) => Promise<void>;
 }
 
 export const useTransactions = (): UseTransactionsReturn => {
@@ -19,20 +16,33 @@ export const useTransactions = (): UseTransactionsReturn => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const [totalCount, setTotalCount] = useState(0);
-    const [pageSize, setPageSize] = useState(20);
-    const [pageNumber, setPageNumber] = useState(0);
 
     const fetchTransactions = useCallback(async (filters: TransactionFilters) => {
+        if (!filters) {
+            console.warn('No filters provided to fetchTransactions');
+            return;
+        }
+
         setLoading(true);
         setError(null);
+        
         try {
+            console.log('Fetching transactions with filters:', filters);
             const response = await transactionService.getTransactions(filters);
-            setTransactions(response.data);
-            setTotalCount(response.totalCount);
-            setPageSize(response.pageSize);
-            setPageNumber(response.pageNumber);
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Failed to fetch transactions'));
+            
+            if (response && response.data) {
+                setTransactions(response.data);
+                setTotalCount(response.totalCount);
+            } else {
+                setTransactions([]);
+                setTotalCount(0);
+                console.warn('Received empty response from server');
+            }
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+            setError(error instanceof Error ? error : new Error('Failed to fetch transactions'));
+            setTransactions([]);
+            setTotalCount(0);
         } finally {
             setLoading(false);
         }
@@ -42,31 +52,13 @@ export const useTransactions = (): UseTransactionsReturn => {
         setLoading(true);
         setError(null);
         try {
-            return await transactionService.getTransactionById(id);
-        } catch (err) {
-            const error = err instanceof Error ? err : new Error('Failed to fetch transaction');
-            setError(error);
-            throw error;
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    const fetchAccountTransactions = useCallback(async (
-        accountId: number,
-        page: number = 0,
-        size: number = 20
-    ) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await transactionService.getAccountTransactions(accountId, page, size);
-            setTransactions(response.data);
-            setTotalCount(response.totalCount);
-            setPageSize(response.pageSize);
-            setPageNumber(response.pageNumber);
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Failed to fetch account transactions'));
+            const transaction = await transactionService.getTransactionById(id);
+            return transaction;
+        } catch (error) {
+            console.error('Error fetching transaction by ID:', error);
+            const err = error instanceof Error ? error : new Error('Failed to fetch transaction');
+            setError(err);
+            throw err;
         } finally {
             setLoading(false);
         }
@@ -77,10 +69,7 @@ export const useTransactions = (): UseTransactionsReturn => {
         loading,
         error,
         totalCount,
-        pageSize,
-        pageNumber,
         fetchTransactions,
-        fetchTransactionById,
-        fetchAccountTransactions
+        fetchTransactionById
     };
 };

@@ -5,6 +5,7 @@ import io.restassured.http.ContentType;
 import jakarta.transaction.Transactional;
 import org.acme.entity.BankAccount;
 import org.acme.entity.User;
+import org.acme.entity.Transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,8 +26,12 @@ public class BankAccountResourceTest {
     @BeforeEach
     @Transactional
     void setUp() {
-        // Clean up existing test data
+        // Clean up existing test data in the correct order
+        // First delete transactions
+        Transaction.deleteAll();
+        // Then delete bank accounts
         BankAccount.deleteAll();
+        // Finally delete users
         User.deleteAll();
 
         // Create test user

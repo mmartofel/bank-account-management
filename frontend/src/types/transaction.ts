@@ -25,8 +25,8 @@ export interface Transaction {
     currency: string;
     sourceAccountId: number;
     destinationAccountId?: number;
-    transactionDate: string;
-    processingDate: string;
+    transactionDate?: string;
+    processingDate?: string;
     status: TransactionStatus;
     description: string;
     referenceNumber: string;
@@ -38,9 +38,12 @@ export interface TransactionFilters {
     accountId?: number;
     type?: TransactionType;
     status?: TransactionStatus;
-    startDate?: string;
-    endDate?: string;
+    startDate?: string | null;
+    endDate?: string | null;
+    minAmount?: number;
+    maxAmount?: number;
     category?: string;
+    description?: string;
     page?: number;
     size?: number;
 }

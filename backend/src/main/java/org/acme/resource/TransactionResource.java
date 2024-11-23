@@ -48,11 +48,11 @@ public class TransactionResource {
                 accountId, type, status, startDate, endDate, category
         );
 
-        return Response.ok()
+        return Response.ok(transactions)
+                .header("Access-Control-Expose-Headers", "X-Total-Count, X-Page-Size, X-Page-Number")
                 .header("X-Total-Count", totalCount)
                 .header("X-Page-Size", size)
                 .header("X-Page-Number", page)
-                .entity(transactions)
                 .build();
     }
 
@@ -77,11 +77,11 @@ public class TransactionResource {
                 accountId, null, null, null, null, null
         );
 
-        return Response.ok()
+        return Response.ok(transactions)
+                .header("Access-Control-Expose-Headers", "X-Total-Count, X-Page-Size, X-Page-Number")
                 .header("X-Total-Count", totalCount)
                 .header("X-Page-Size", size)
                 .header("X-Page-Number", page)
-                .entity(transactions)
                 .build();
     }
 }
