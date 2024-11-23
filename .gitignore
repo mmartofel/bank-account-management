@@ -1,0 +1,26 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Backend
+backend/target/
+backend/*.iml
+backend/.idea/
+backend/.settings/
+backend/.project
+backend/.classpath
+backend/.factorypath
+backend/src/main/resources/application-dev.properties
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
