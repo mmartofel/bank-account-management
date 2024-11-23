@@ -1,3 +1,11 @@
+-- Drop sequences if they exist
+DROP SEQUENCE IF EXISTS transaction_ref_seq;
+DROP SEQUENCE IF EXISTS transaction_seq;
+
+-- Create sequences
+CREATE SEQUENCE transaction_ref_seq START WITH 1000;
+CREATE SEQUENCE transaction_seq START WITH 1;
+
 -- This file allow to write SQL commands that will be emitted in test and dev.
 -- The commands are commented as their support depends of the database
 -- Inserting 100 sample users
@@ -161,3 +169,123 @@ FROM generate_series(1, 20);
 
 -- Update the sequence for bank_accounts
 ALTER SEQUENCE bank_accounts_seq RESTART WITH 600;
+
+-- Generate random transactions
+INSERT INTO transactions (
+    id, 
+    type, 
+    amount, 
+    currency, 
+    source_account_id, 
+    destination_account_id,
+    transaction_date, 
+    processing_date, 
+    status, 
+    description, 
+    reference_number, 
+    category, 
+    balance_after_transaction
+)
+SELECT 
+    nextval('transaction_seq'),
+    CASE (FLOOR(random() * 11))::int
+        WHEN 0 THEN 'DIRECT_DEPOSIT'
+        WHEN 1 THEN 'PAYMENT'
+        WHEN 2 THEN 'TRANSFER'
+        WHEN 3 THEN 'ATM_WITHDRAWAL'
+        WHEN 4 THEN 'DEPOSIT'
+        WHEN 5 THEN 'WIRE_TRANSFER'
+        WHEN 6 THEN 'REFUND'
+        WHEN 7 THEN 'INTEREST_CREDIT'
+        WHEN 8 THEN 'FEE'
+        WHEN 9 THEN 'REVERSAL'
+        WHEN 10 THEN 'PAYMENT'
+        ELSE 'TRANSFER'
+    END,
+    CASE 
+        WHEN random() < 0.7 THEN (random() * 1950 + 50)::numeric(10,2)
+        ELSE (random() * 8000 + 2000)::numeric(10,2)
+    END,
+    'USD',
+    a.id,
+    CASE 
+        WHEN random() < 0.3 THEN (
+            SELECT id FROM bank_accounts 
+            WHERE id != a.id 
+            ORDER BY random() 
+            LIMIT 1
+        )
+        ELSE NULL 
+    END,
+    timestamp '2023-01-01 00:00:00' +
+        (random() * (timestamp '2024-01-20 00:00:00' -
+                   timestamp '2023-01-01 00:00:00'))::interval,
+    timestamp '2023-01-01 00:00:00' +
+        (random() * (timestamp '2024-01-20 00:00:00' -
+                   timestamp '2023-01-01 00:00:00'))::interval,
+    CASE 
+        WHEN random() < 0.8 THEN 'COMPLETED'
+        WHEN random() < 0.9 THEN 'PENDING'
+        WHEN random() < 0.95 THEN 'FAILED'
+        ELSE 'SCHEDULED'
+    END,
+    CASE (FLOOR(random() * 9))::int
+        WHEN 0 THEN 'Salary Deposit'
+        WHEN 1 THEN 'Monthly Rent'
+        WHEN 2 THEN 'Utility Payment'
+        WHEN 3 THEN 'Grocery Shopping'
+        WHEN 4 THEN 'Online Purchase'
+        WHEN 5 THEN 'ATM Withdrawal'
+        WHEN 6 THEN 'Investment Transfer'
+        WHEN 7 THEN 'Insurance Premium'
+        WHEN 8 THEN 'Subscription Payment'
+        ELSE 'Miscellaneous Transaction'
+    END,
+    'TRX' || LPAD(CAST(nextval('transaction_ref_seq') AS TEXT), 8, '0'),
+    CASE (FLOOR(random() * 9))::int
+        WHEN 0 THEN 'INCOME'
+        WHEN 1 THEN 'HOUSING'
+        WHEN 2 THEN 'UTILITIES'
+        WHEN 3 THEN 'GROCERIES'
+        WHEN 4 THEN 'SHOPPING'
+        WHEN 5 THEN 'CASH'
+        WHEN 6 THEN 'INVESTMENT'
+        WHEN 7 THEN 'INSURANCE'
+        WHEN 8 THEN 'SUBSCRIPTION'
+        ELSE 'OTHER'
+    END,
+    (random() * 49000 + 1000)::numeric(10,2)
+FROM 
+    bank_accounts a,
+    generate_series(1, 15); -- 15 transactions per account
+
+-- Insert specific test transactions
+INSERT INTO transactions (
+    id, 
+    type, 
+    amount, 
+    currency, 
+    source_account_id, 
+    destination_account_id,
+    transaction_date, 
+    processing_date, 
+    status, 
+    description, 
+    reference_number, 
+    category, 
+    balance_after_transaction
+)
+VALUES
+    (nextval('transaction_seq'), 'DIRECT_DEPOSIT', 5000.00, 'USD', 1, NULL, '2024-01-01 09:00:00'::timestamp, '2024-01-01 09:00:00'::timestamp, 'COMPLETED', 'January Salary', 'TRX' || LPAD(CAST(nextval('transaction_ref_seq') AS TEXT), 8, '0'), 'INCOME', 15000.00),
+    (nextval('transaction_seq'), 'PAYMENT', 1500.00, 'USD', 1, NULL, '2024-01-02 10:00:00'::timestamp, '2024-01-02 10:00:00'::timestamp, 'COMPLETED', 'Rent Payment', 'TRX' || LPAD(CAST(nextval('transaction_ref_seq') AS TEXT), 8, '0'), 'HOUSING', 13500.00),
+    (nextval('transaction_seq'), 'TRANSFER', 2000.00, 'USD', 2, 3, '2024-01-03 11:00:00'::timestamp, '2024-01-03 11:00:00'::timestamp, 'COMPLETED', 'Investment Transfer', 'TRX' || LPAD(CAST(nextval('transaction_ref_seq') AS TEXT), 8, '0'), 'INVESTMENT', 8000.00),
+    (nextval('transaction_seq'), 'ATM_WITHDRAWAL', 300.00, 'USD', 2, NULL, '2024-01-04 12:00:00'::timestamp, '2024-01-04 12:00:00'::timestamp, 'COMPLETED', 'ATM Withdrawal', 'TRX' || LPAD(CAST(nextval('transaction_ref_seq') AS TEXT), 8, '0'), 'CASH', 7700.00),
+    (nextval('transaction_seq'), 'WIRE_TRANSFER', 10000.00, 'USD', 3, 4, '2024-01-05 13:00:00'::timestamp, '2024-01-05 13:00:00'::timestamp, 'COMPLETED', 'Property Down Payment', 'TRX' || LPAD(CAST(nextval('transaction_ref_seq') AS TEXT), 8, '0'), 'HOUSING', 20000.00),
+    (nextval('transaction_seq'), 'PAYMENT', 2500.00, 'USD', 3, NULL, '2024-01-05 14:00:00'::timestamp, NULL, 'FAILED', 'Car Payment - Insufficient Funds', 'TRX' || LPAD(CAST(nextval('transaction_ref_seq') AS TEXT), 8, '0'), 'AUTO', NULL),
+    (nextval('transaction_seq'), 'PAYMENT', 99.99, 'USD', 4, NULL, '2024-01-06 15:00:00'::timestamp, '2024-01-06 15:00:00'::timestamp, 'COMPLETED', 'Streaming Services', 'TRX' || LPAD(CAST(nextval('transaction_ref_seq') AS TEXT), 8, '0'), 'ENTERTAINMENT', 5000.00),
+    (nextval('transaction_seq'), 'TRANSFER', 5000.00, 'USD', 4, 5, '2024-01-07 16:00:00'::timestamp, NULL, 'PENDING', 'Large Transfer - Pending Review', 'TRX' || LPAD(CAST(nextval('transaction_ref_seq') AS TEXT), 8, '0'), 'TRANSFER', NULL),
+    (nextval('transaction_seq'), 'DEPOSIT', 3000.00, 'USD', 5, NULL, '2024-01-08 17:00:00'::timestamp, '2024-01-08 17:00:00'::timestamp, 'COMPLETED', 'Check Deposit', 'TRX' || LPAD(CAST(nextval('transaction_ref_seq') AS TEXT), 8, '0'), 'INCOME', 8000.00),
+    (nextval('transaction_seq'), 'PAYMENT', 150.00, 'USD', 5, NULL, '2024-02-01 00:00:00'::timestamp, NULL, 'SCHEDULED', 'Scheduled Utility Payment', 'TRX' || LPAD(CAST(nextval('transaction_ref_seq') AS TEXT), 8, '0'), 'UTILITIES', NULL);
+
+-- Update the sequence
+ALTER SEQUENCE transaction_seq RESTART WITH 1000;

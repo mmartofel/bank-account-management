@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Container,
+    Box,
     Typography,
     Paper,
     CircularProgress,
@@ -21,10 +21,10 @@ export const UserSearchPage: React.FC = () => {
 
     const debouncedSearch = useMemo(
         () => debounce(async (query: string) => {
-            if (query.length >= 2) { // Only search if 2 or more characters
+            if (query.length >= 2) {
                 handleSearch(query);
             }
-        }, 300), // 300ms delay
+        }, 300),
         [handleSearch]
     );
 
@@ -41,12 +41,33 @@ export const UserSearchPage: React.FC = () => {
     };
 
     return (
-        <Container maxWidth="md" sx={{ py: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom>
+        <Box
+            sx={{
+                width: '100%',
+                maxWidth: '800px',
+                margin: '0 auto',
+                p: { xs: 2, sm: 3 }
+            }}
+        >
+            <Typography 
+                variant="h4" 
+                component="h1" 
+                gutterBottom
+                sx={{
+                    textAlign: 'center',
+                    mb: 4
+                }}
+            >
                 Find Bank Account User
             </Typography>
             
-            <Paper sx={{ p: 3, mb: 4 }}>
+            <Paper 
+                elevation={3}
+                sx={{ 
+                    p: { xs: 2, sm: 3 },
+                    width: '100%'
+                }}
+            >
                 <Autocomplete
                     id="user-search"
                     options={searchResults?.users || []}
@@ -88,7 +109,7 @@ export const UserSearchPage: React.FC = () => {
                     noOptionsText={inputValue.length < 2 
                         ? "Type at least 2 characters to search" 
                         : "No users found"}
-                    filterOptions={(x) => x} // Disable client-side filtering
+                    filterOptions={(x) => x}
                 />
                 
                 {error && (
@@ -97,6 +118,6 @@ export const UserSearchPage: React.FC = () => {
                     </Alert>
                 )}
             </Paper>
-        </Container>
+        </Box>
     );
 };
