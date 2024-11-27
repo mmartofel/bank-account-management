@@ -79,6 +79,7 @@
 # Stage 1: Build the application
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /workspace/app
+RUN git clone https://github.com/mmartofel/bank-account-management
 RUN ls
 
 # Copy the Maven POM and source files
