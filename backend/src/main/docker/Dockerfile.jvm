@@ -88,8 +88,8 @@ RUN ls
 # RUN ls
 
 # Build the application
-RUN cd bank-account-management/backend/pom.xml \
-    mvn clean package -DskipTests \
+RUN cd bank-account-management/backend && \
+    mvn clean package -DskipTests && \
     ls
 
 # Stage 2: Create the runtime image
