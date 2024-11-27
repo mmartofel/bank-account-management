@@ -85,7 +85,7 @@ COPY backend/pom.xml .
 COPY backend/src src/
 
 # Build the application
-RUN mvn clean package -DskipTests
+RUN ./mvnw clean package -DskipTests
 
 # Stage 2: Create the runtime image
 FROM registry.access.redhat.com/ubi8/openjdk-17:1.18
