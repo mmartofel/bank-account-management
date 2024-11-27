@@ -79,15 +79,11 @@
 # Stage 1: Build the application
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /workspace/app
+
+# Clone the repository
 RUN git clone https://github.com/mmartofel/bank-account-management
-RUN ls
 
-# Copy the Maven POM and source files
-# COPY bank-account-management/backend/pom.xml .
-# COPY bank-account-management/backend/src src/
-# RUN ls
-
-# Build the application
+# Maven build the application artifacts
 RUN cd bank-account-management/backend && \
     mvn clean package -DskipTests && \
     ls
@@ -98,10 +94,10 @@ FROM registry.access.redhat.com/ubi8/openjdk-17:1.18
 ENV LANGUAGE='en_US:en'
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
-COPY --from=build --chown=185 /workspace/app/target/quarkus-app/lib/ /deployments/lib/
-COPY --from=build --chown=185 /workspace/app/target/quarkus-app/*.jar /deployments/
-COPY --from=build --chown=185 /workspace/app/target/quarkus-app/app/ /deployments/app/
-COPY --from=build --chown=185 /workspace/app/target/quarkus-app/quarkus/ /deployments/quarkus/
+COPY --from=build --chown=185 /workspace/app/bank-account-management/backend/target/quarkus-app/lib/ /deployments/lib/
+COPY --from=build --chown=185 /workspace/app/bank-account-management/backend/target/quarkus-app/*.jar /deployments/
+COPY --from=build --chown=185 /workspace/app/bank-account-management/backend/target/quarkus-app/app/ /deployments/app/
+COPY --from=build --chown=185 /workspace/app/bank-account-management/backend/target/quarkus-app/quarkus/ /deployments/quarkus/
 
 EXPOSE 8080
 USER 185
