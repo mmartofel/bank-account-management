@@ -83,13 +83,14 @@ RUN git clone https://github.com/mmartofel/bank-account-management
 RUN ls
 
 # Copy the Maven POM and source files
-COPY bank-account-management/backend/pom.xml .
-COPY bank-account-management/backend/src src/
-RUN ls
+# COPY bank-account-management/backend/pom.xml .
+# COPY bank-account-management/backend/src src/
+# RUN ls
 
 # Build the application
-RUN mvn clean package -DskipTests
-RUN ls
+RUN cd bank-account-management/backend/pom.xml \
+    mvn clean package -DskipTests \
+    ls
 
 # Stage 2: Create the runtime image
 FROM registry.access.redhat.com/ubi8/openjdk-17:1.18
