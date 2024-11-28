@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.openshift.io/vcs-uri: 'https://github.com/mmartofel/kuberneter-probes/tree/main/deployment/postgres'
+  labels:
+    app: postgres
+    app.kubernetes.io/component: database
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/part-of: DATA_SUBSYSTEM
+    app.openshift.io/runtime: postgresql
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        imagePullPolicy: IfNotPresent
+        image: registry.redhat.io/rhel8/postgresql-12:latest
+        ports:
+          - containerPort: 5432
+            protocol: TCP
+        envFrom:
+          - configMapRef:
+             name: postgres-setup-configmap
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "100m"
+          limits:
+            memory: "64Mi"
+            cpu: "200m"
+

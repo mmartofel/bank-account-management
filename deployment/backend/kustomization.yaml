@@ -1,0 +1,7 @@
+resources:
+- configmap-postgress.yaml
+- configmap-orm.yaml
+- configmap-flyway.yaml
+- deployment.yaml
+- service.yaml
+- route.yaml

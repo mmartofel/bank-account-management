@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.openshift.io/connects-to: 'postges'
+    app.openshift.io/vcs-uri: 'https://github.com/mmartofel/kuberneter-backend.git'
+  labels:
+    app: backend
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/instance: backend
+    app.kubernetes.io/part-of: QUARKUS_API_SERVICE
+    app.openshift.io/runtime: quarkus
+  name: backend
+spec:
+  selector:
+    matchLabels:
+      deployment: backend
+  template:
+    metadata:
+     labels:
+      deployment: backend
+    spec:
+      containers:
+      - env:
+        - name: DBUSER
+          valueFrom:
+            configMapKeyRef:
+              key: DBUSER
+              name: postgres-configmap
+        - name: DBCONNECT
+          valueFrom:
+            configMapKeyRef:
+              key: DBCONNECT
+              name: postgres-configmap
+        - name: DBPASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: DBPASSWORD
+              name: postgres-configmap
+        envFrom:
+          - configMapRef:
+              name: orm-configmap
+          - configMapRef:
+              name: flyway-configmap
+        startupProbe:
+            httpGet:
+              path: /q/health/started
+              port: 8080
+              scheme: HTTP
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+        livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: 8080
+              scheme: HTTP
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+        readinessProbe:
+            httpGet:
+              path: /q/health/ready
+              port: 8080
+              scheme: HTTP
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+        image: quay.io/mmartofe/bank-account-management-backend:main
+        imagePullPolicy: Always
+        name: backend
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 8443
+          protocol: TCP
+        - containerPort: 8778
+          protocol: TCP
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "512Mi"
+            cpu: "300m"
+
