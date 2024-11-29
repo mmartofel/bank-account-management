@@ -6,44 +6,34 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.jvm -t quarkus/bank-account-management-jvm .
+# podman build -f src/main/docker/Dockerfile.jvm -t quarkus/bank-account-management-jvm .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/bank-account-management-jvm
-#
-# If you want to include the debug port into your docker image
-# you will have to expose the debug port (default 5005 being the default) like this :  EXPOSE 8080 5005.
-#
-# Then run the container using :
-#
-# docker run -i --rm -p 8080:8080 quarkus/bank-account-management-jvm
+# podman run -i --rm --ulimit nofile=65535:65535 -p 8080:8080 quarkus/bank-account-management-jvm
 #
 ###
 FROM registry.access.redhat.com/ubi9/ubi as build
 
 WORKDIR /workspace/app
 
-# Set higher ulimit for file descriptors
-RUN ulimit -n 65535
-
 # Install required packages
 RUN dnf -y install git maven java-17-openjdk-devel && \
-    dnf clean all && \
-    # Set system-wide ulimit in limits.conf
-    echo "* soft nofile 65535" >> /etc/security/limits.conf && \
-    echo "* hard nofile 65535" >> /etc/security/limits.conf
+    dnf clean all
 
-# Set JAVA_HOME
+# Set JAVA_HOME and Maven options for better performance
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+ENV MAVEN_OPTS="-Xmx2048m -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
 # Clone the repository
 RUN git clone https://github.com/mmartofel/bank-account-management
 
-# Maven build with debug output and increased file descriptors
+# Maven build with optimizations
 RUN cd bank-account-management/backend && \
-    ulimit -n 65535 && \
-    mvn clean package -e -DskipTests -Dulimit.nofile=65535
+    mvn clean package -e -DskipTests \
+    -Dquarkus.package.type=fast-jar \
+    -Dmaven.test.skip=true \
+    -T 1C
 
 # Stage 2: Create the runtime image
 FROM registry.access.redhat.com/ubi9/openjdk-17:1.21-2
@@ -58,10 +48,6 @@ COPY --from=build /workspace/app/bank-account-management/backend/target/quarkus-
 
 ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
-
-# Set ulimit for runtime container as well
-RUN echo "* soft nofile 65535" >> /etc/security/limits.conf && \
-    echo "* hard nofile 65535" >> /etc/security/limits.conf
 
 EXPOSE 8080
 USER 185
