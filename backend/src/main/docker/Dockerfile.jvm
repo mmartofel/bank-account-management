@@ -81,6 +81,9 @@
 FROM registry.access.redhat.com/ubi9/openjdk-17:1.21-2 AS build
 WORKDIR /workspace/app
 
+# Install git
+RUN dnf -y install git; dnf clean all;
+
 # Clone the repository
 RUN git clone https://github.com/mmartofel/bank-account-management
 
