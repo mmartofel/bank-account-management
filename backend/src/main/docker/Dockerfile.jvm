@@ -24,9 +24,15 @@ FROM registry.access.redhat.com/ubi9/ubi as build
 
 WORKDIR /workspace/app
 
+# Set higher ulimit for file descriptors
+RUN ulimit -n 65535
+
 # Install required packages
 RUN dnf -y install git maven java-17-openjdk-devel && \
-    dnf clean all
+    dnf clean all && \
+    # Set system-wide ulimit in limits.conf
+    echo "* soft nofile 65535" >> /etc/security/limits.conf && \
+    echo "* hard nofile 65535" >> /etc/security/limits.conf
 
 # Set JAVA_HOME
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
@@ -34,9 +40,10 @@ ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 # Clone the repository
 RUN git clone https://github.com/mmartofel/bank-account-management
 
-# Maven build with debug output
+# Maven build with debug output and increased file descriptors
 RUN cd bank-account-management/backend && \
-    mvn clean package -e -DskipTests
+    ulimit -n 65535 && \
+    mvn clean package -e -DskipTests -Dulimit.nofile=65535
 
 # Stage 2: Create the runtime image
 FROM registry.access.redhat.com/ubi9/openjdk-17:1.21-2
@@ -51,6 +58,10 @@ COPY --from=build /workspace/app/bank-account-management/backend/target/quarkus-
 
 ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
+
+# Set ulimit for runtime container as well
+RUN echo "* soft nofile 65535" >> /etc/security/limits.conf && \
+    echo "* hard nofile 65535" >> /etc/security/limits.conf
 
 EXPOSE 8080
 USER 185
