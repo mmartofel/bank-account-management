@@ -78,11 +78,13 @@
 ###
 # Stage 1: Build the application
 # FROM maven:3.9.6-eclipse-temurin-17 AS build
-FROM registry.access.redhat.com/ubi9/openjdk-17:1.21-2 AS build
+# FROM registry.access.redhat.com/ubi9/openjdk-17:1.21-2 AS build
+FROM registry.access.redhat.com/ubi9/ubi as build
+
 WORKDIR /workspace/app
 
 # Install git
-RUN dnf -y install git; dnf clean all;
+RUN dnf -y install git; dnf -y install maven; dnf -y install java-17-openjdk; dnf -y clean all;
 
 # Clone the repository
 RUN git clone https://github.com/mmartofel/bank-account-management
@@ -93,7 +95,8 @@ RUN cd bank-account-management/backend && \
     ls
 
 # Stage 2: Create the runtime image
-FROM registry.access.redhat.com/ubi8/openjdk-17:1.18
+# FROM registry.access.redhat.com/ubi9/openjdk-17:1.21-2
+FROM registry.access.redhat.com/ubi9/openjdk-17:1.21-2
 
 ENV LANGUAGE='en_US:en'
 
