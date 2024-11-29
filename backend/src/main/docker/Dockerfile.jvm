@@ -31,52 +31,12 @@ RUN dnf -y install git maven java-17-openjdk-devel && \
 # Set JAVA_HOME
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 
-# Create Maven settings.xml with Red Hat repositories
-RUN mkdir -p /root/.m2 && \
-    echo '<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" \
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
-          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 \
-          https://maven.apache.org/xsd/settings-1.0.0.xsd"> \
-          <profiles> \
-            <profile> \
-              <id>red-hat-enterprise-maven-repository</id> \
-              <repositories> \
-                <repository> \
-                  <id>red-hat-enterprise-maven-repository</id> \
-                  <url>https://maven.repository.redhat.com/ga/</url> \
-                  <releases> \
-                    <enabled>true</enabled> \
-                  </releases> \
-                  <snapshots> \
-                    <enabled>false</enabled> \
-                  </snapshots> \
-                </repository> \
-              </repositories> \
-              <pluginRepositories> \
-                <pluginRepository> \
-                  <id>red-hat-enterprise-maven-repository</id> \
-                  <url>https://maven.repository.redhat.com/ga/</url> \
-                  <releases> \
-                    <enabled>true</enabled> \
-                  </releases> \
-                  <snapshots> \
-                    <enabled>false</enabled> \
-                  </snapshots> \
-                </pluginRepository> \
-              </pluginRepositories> \
-            </profile> \
-          </profiles> \
-          <activeProfiles> \
-            <activeProfile>red-hat-enterprise-maven-repository</activeProfile> \
-          </activeProfiles> \
-        </settings>' > /root/.m2/settings.xml
-
 # Clone the repository
 RUN git clone https://github.com/mmartofel/bank-account-management
 
 # Maven build with debug output
 RUN cd bank-account-management/backend && \
-    mvn clean package -X -e
+    mvn clean package -e -DskipTests
 
 # Stage 2: Create the runtime image
 FROM registry.access.redhat.com/ubi9/openjdk-17:1.21-2
