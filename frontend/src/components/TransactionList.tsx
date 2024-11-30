@@ -45,8 +45,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ filters }) => 
         }
     }, [fetchTransactions, filters, page, rowsPerPage]);
 
-    const handleChangePage = (event: unknown, newPage: number) => {
-        console.log('Changing page to:', newPage);
+    const handleChangePage = (_: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -112,7 +111,11 @@ export const TransactionList: React.FC<TransactionListProps> = ({ filters }) => 
                         ) : transactions.length > 0 ? (
                             transactions.map((transaction) => (
                                 <TableRow key={transaction.id}>
-                                    <TableCell>{format(new Date(transaction.transactionDate), 'yyyy-MM-dd HH:mm')}</TableCell>
+                                    <TableCell>
+                                        {transaction.transactionDate
+                                            ? format(new Date(transaction.transactionDate), 'yyyy-MM-dd HH:mm')
+                                            : 'N/A'}
+                                    </TableCell>
                                     <TableCell>
                                         <Chip 
                                             label={transaction.type} 

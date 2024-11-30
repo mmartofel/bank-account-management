@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    AppBar,
     Box,
     Container,
     CssBaseline,
@@ -10,7 +9,6 @@ import {
     ListItemIcon,
     ListItemText,
     Toolbar,
-    Typography
 } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';

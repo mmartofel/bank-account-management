@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Transaction, TransactionFilters, PaginatedResponse } from '../types/transaction';
+import { Transaction, TransactionFilters } from '../types/transaction';
 import { transactionService } from '../services/transactionService';
 
 interface UseTransactionsReturn {

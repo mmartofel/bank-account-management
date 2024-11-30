@@ -101,11 +101,15 @@ export const TransactionDetailsDialog: React.FC<TransactionDetailsDialogProps> =
                     <Divider sx={{ my: 2 }} />
                     <DetailRow
                         label="Transaction Date"
-                        value={format(new Date(transaction.transactionDate), 'PPP')}
+                        value={transaction.transactionDate 
+                            ? format(new Date(transaction.transactionDate), 'PPP')
+                            : 'N/A'}
                     />
                     <DetailRow
                         label="Processing Date"
-                        value={format(new Date(transaction.processingDate), 'PPP')}
+                        value={transaction.processingDate
+                            ? format(new Date(transaction.processingDate), 'PPP')
+                            : 'N/A'}
                     />
                     <Divider sx={{ my: 2 }} />
                     <DetailRow label="Description" value={transaction.description} />

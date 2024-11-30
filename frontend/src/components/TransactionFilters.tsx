@@ -1,13 +1,12 @@
 import React from 'react';
 import {
     Box,
-    TextField,
-    MenuItem,
-    Grid,
     Button,
     FormControl,
     InputLabel,
-    Select
+    MenuItem,
+    Select,
+    Grid
 } from '@mui/material';
 import { TransactionType, TransactionStatus, TransactionFilters as Filters } from '../types/transaction';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
