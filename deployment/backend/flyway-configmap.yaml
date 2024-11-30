@@ -1,7 +1,0 @@
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: flyway-configmap
-data:
-  FLYWAY_BASELINE_ON_MIGRATE: "true"
-  FLYWAY_BASELINE_VERSION: "0"
