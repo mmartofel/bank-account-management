@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+    app.kubernetes.io/component: postgres
+    app.kubernetes.io/instance: postgres
+spec:
+  ports:
+  - name: 5432-tcp
+    port: 5432
+    targetPort: 5432
+  selector:
+    app: postgres
+  type: ClusterIP
+  sessionAffinity: None

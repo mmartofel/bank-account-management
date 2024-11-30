@@ -1,0 +1,20 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: configmap-backend
+data:
+  # Database access setup
+  POSTGRESQL_USER: 'demo'
+  POSTGRESQL_PASSWORD: 'demo'
+  POSTGRESQL_DATABASE: 'demo'
+  POSTGRESQL_SERVICE_HOST: 'postgres'
+  POSTGRESQL_SERVICE_PORT: '5432'
+  #ORM setup
+  ORM_DATABASE_GENERATION: 'drop-and-create'
+  ORM_LOG_SQL: 'false'
+  #Flyway setup, not used for now, we generate database structure the other way
+  FLYWAY_MIGRATE_AT_START: 'true'
+  FLYWAY_BASELINE_ON_MIGRATE: 'true'
+  FLYWAY_BASELINE_VERSION: '0'
+
+  
