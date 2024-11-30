@@ -3,6 +3,8 @@ apiVersion: v1
 metadata:
   name: configmap-backend
 data:
+  # Quarkus profile setup
+  QUARKUS_PROFILE: 'ocp'
   # Database access setup
   POSTGRESQL_USER: 'demo'
   POSTGRESQL_PASSWORD: 'demo'
