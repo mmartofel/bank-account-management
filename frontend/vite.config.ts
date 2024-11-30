@@ -5,6 +5,9 @@ import svgr from 'vite-plugin-svgr'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), svgr()],
+  build: {
+    chunkSizeWarningLimit: 800,
+  },
   server: {
     port: 5173,
     proxy: {
