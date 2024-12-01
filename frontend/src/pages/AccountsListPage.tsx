@@ -17,10 +17,10 @@ export const AccountsListPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const { accounts, loading, error } = useBankAccounts();
 
-    const filteredAccounts = accounts.filter(account => 
-        account.accountNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        account.accountType.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredAccounts = accounts?.filter(account => 
+        account?.accountNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        account?.accountType?.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || [];
 
     const handleEdit = (account: BankAccount) => {
         // TODO: Implement edit functionality
@@ -50,39 +50,41 @@ export const AccountsListPage: React.FC = () => {
 
     return (
         <Container maxWidth="md" sx={{ mt: 4 }}>
-            <Box mb={4}>
-                <Typography variant="h4" gutterBottom>
-                    Bank Accounts
-                </Typography>
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    placeholder="Search accounts..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <Search />
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-            </Box>
+            <Typography variant="h4" component="h1" gutterBottom>
+                Bank Accounts
+            </Typography>
+            
+            <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Search accounts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                sx={{ mb: 4 }}
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <Search />
+                        </InputAdornment>
+                    ),
+                }}
+            />
 
             {filteredAccounts.length === 0 ? (
-                <Typography variant="body1" color="text.secondary" textAlign="center">
-                    No accounts found
-                </Typography>
+                <Alert severity="info">
+                    No accounts found{searchQuery ? ' matching your search' : ''}
+                </Alert>
             ) : (
-                filteredAccounts.map(account => (
-                    <AccountCard
-                        key={account.id}
-                        account={account}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                    />
-                ))
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {filteredAccounts.map((account) => (
+                        <AccountCard
+                            key={account.id}
+                            account={account}
+                            onEdit={() => handleEdit(account)}
+                            onDelete={() => handleDelete(account)}
+                        />
+                    ))}
+                </Box>
             )}
         </Container>
     );

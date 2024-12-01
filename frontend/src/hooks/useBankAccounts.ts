@@ -14,9 +14,14 @@ export const useBankAccounts = (userId?: number) => {
                 const response = userId 
                     ? await bankAccountApi.getByUserId(userId)
                     : await bankAccountApi.getAll();
-                setAccounts(response.data);
+                
+                // Ensure response.data is an array
+                const accountsData = Array.isArray(response.data) ? response.data : [];
+                setAccounts(accountsData);
                 setError(null);
             } catch (err) {
+                console.error('Error fetching accounts:', err);
+                setAccounts([]); // Reset accounts on error
                 setError(err instanceof Error ? err.message : 'Failed to fetch accounts');
             } finally {
                 setLoading(false);
@@ -29,11 +34,17 @@ export const useBankAccounts = (userId?: number) => {
     const updateAccountStatus = async (id: number, status: BankAccount['status']) => {
         try {
             const response = await bankAccountApi.updateStatus(id, status);
-            setAccounts(accounts.map(account => 
-                account.id === id ? response.data : account
-            ));
-            return response.data;
+            if (response.data) {
+                setAccounts(prevAccounts => 
+                    prevAccounts.map(account => 
+                        account.id === id ? response.data : account
+                    )
+                );
+                return response.data;
+            }
+            throw new Error('No data received from update');
         } catch (err) {
+            console.error('Error updating account status:', err);
             throw err instanceof Error ? err : new Error('Failed to update account status');
         }
     };
