@@ -29,8 +29,5 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Expose port 8080 (OpenShift preferred)
 EXPOSE 8080
 
-# Use non-root user (already set in nginx-unprivileged)
-USER 101:101
-
 # Run nginx
 CMD ["nginx", "-g", "daemon off;"]
