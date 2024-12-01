@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: frontend-config
 data:
-  VITE_API_BASE_URL: "http://nginx-service/api"
+  VITE_API_BASE_URL: "/api"
