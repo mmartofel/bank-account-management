@@ -49,6 +49,9 @@ spec:
               port: 8080
             initialDelaySeconds: 15
             periodSeconds: 20
+          envFrom:
+            - configMapRef:
+                name: frontend-config
 ---
 apiVersion: v1
 kind: Service
