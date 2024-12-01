@@ -1,6 +1,7 @@
-# Stage 1: Build the React application
+# Build stage
 FROM node:20-alpine as build
 
+# Set working directory
 WORKDIR /app
 
 # Copy package files
@@ -18,29 +19,39 @@ RUN npm run build
 
 # Stage 2: Serve the application using nginx
 FROM nginx:alpine
-# FROM registry.redhat.io/rhel9/nginx-124:9.5-1732617836
 
-# Create nginx temp directories with correct permissions
-RUN mkdir -p /var/cache/nginx && \
-    mkdir -p /var/cache/nginx/client_temp && \
-    mkdir -p /var/cache/nginx/proxy_temp && \
-    mkdir -p /var/cache/nginx/fastcgi_temp && \
-    mkdir -p /var/cache/nginx/uwsgi_temp && \
-    mkdir -p /var/cache/nginx/scgi_temp && \
-    chmod -R 777 /var/cache/nginx && \
-    chmod -R 777 /var/run && \
-    chmod -R 777 /var/log/nginx && \
-    touch /var/run/nginx.pid && \
-    chmod 777 /var/run/nginx.pid
+# Switch to root to modify permissions
+USER root
 
-# Copy built files from build stage
-COPY --from=build /app/dist /usr/share/nginx/html
+# Create required directories and set permissions
+RUN mkdir -p /var/cache/nginx \
+    /var/run \
+    /var/log/nginx \
+    /var/lib/nginx && \
+    chmod -R g+rwx /var/cache/nginx \
+    /var/run \
+    /var/log/nginx \
+    /var/lib/nginx && \
+    chmod -R g+rwx /etc/nginx && \
+    chgrp -R 0 /var/cache/nginx \
+    /var/run \
+    /var/log/nginx \
+    /var/lib/nginx \
+    /etc/nginx
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN chmod g+rw /etc/nginx/conf.d/default.conf
+
+# Copy built files from build stage
+COPY --from=build /app/dist /usr/share/nginx/html
+RUN chmod -R g+rw /usr/share/nginx/html
 
 # Expose port 8080 (OpenShift preferred)
 EXPOSE 8080
 
-# Start nginx
+# Switch to non-root user
+USER 1001
+
+# Run nginx in non-daemon mode
 CMD ["nginx", "-g", "daemon off;"]

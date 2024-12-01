@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: bank-frontend
-          image: quay.io/mmartofe/bank-frontend:latest
+          image: quay.io/mmartofe/bank-account-management-frontend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           resources:
