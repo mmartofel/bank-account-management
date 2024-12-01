@@ -1,7 +1,14 @@
 import axios from 'axios';
 import { Transaction, TransactionFilters, PaginatedResponse } from '../types/transaction';
 
-const API_URL = 'http://localhost:8080/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+const api = axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
 
 export const transactionService = {
     async getTransactions(filters: TransactionFilters): Promise<PaginatedResponse<Transaction>> {
@@ -22,7 +29,7 @@ export const transactionService = {
 
         try {
             console.log('Fetching transactions with params:', Object.fromEntries(params));
-            const response = await axios.get<Transaction[]>(`${API_URL}/transactions`, { params });
+            const response = await api.get<Transaction[]>('/transactions', { params });
             
             // Extract pagination information from headers
             const totalCount = parseInt(response.headers['x-total-count'] || '0');
@@ -46,7 +53,7 @@ export const transactionService = {
 
     async getTransactionById(id: number): Promise<Transaction> {
         try {
-            const response = await axios.get<Transaction>(`${API_URL}/transactions/${id}`);
+            const response = await api.get<Transaction>(`/transactions/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching transaction by ID:', error);
@@ -61,8 +68,8 @@ export const transactionService = {
         });
 
         try {
-            const response = await axios.get(
-                `${API_URL}/transactions/account/${accountId}`,
+            const response = await api.get(
+                `/transactions/account/${accountId}`,
                 { params }
             );
 
