@@ -13,10 +13,16 @@ const api = axios.create({
 
 // User endpoints
 export const searchUsers = async (query: string): Promise<UserSearchResult> => {
-    const response = await api.get<User[]>(`/users/search?query=${encodeURIComponent(query)}`);
+    // Since there's no direct search endpoint, we'll get all users and filter client-side
+    const response = await api.get<User[]>('/users');
+    const filteredUsers = response.data.filter(user => 
+        user.firstName?.toLowerCase().includes(query.toLowerCase()) ||
+        user.lastName?.toLowerCase().includes(query.toLowerCase()) ||
+        user.email?.toLowerCase().includes(query.toLowerCase())
+    );
     return {
-        users: response.data,
-        total: response.data.length
+        users: filteredUsers,
+        total: filteredUsers.length
     };
 };
 
@@ -34,10 +40,22 @@ export const bankAccountApi = {
     getAll: () => api.get<BankAccount[]>('/accounts'),
     getById: (id: number) => api.get<BankAccount>(`/accounts/${id}`),
     getByUserId: (userId: number) => api.get<BankAccount[]>(`/accounts/user/${userId}`),
-    create: (account: Omit<BankAccount, 'id'>) => api.post<BankAccount>('/accounts', account),
-    update: (id: number, account: Partial<BankAccount>) => api.put<BankAccount>(`/accounts/${id}`, account),
+    create: (account: Omit<BankAccount, 'id'>, userId: number) => 
+        api.post<BankAccount>(`/accounts?userId=${userId}`, account),
+    update: (id: number, account: Partial<BankAccount>) => 
+        api.put<BankAccount>(`/accounts/${id}`, account),
     updateStatus: (id: number, status: BankAccount['status']) => 
-        api.put<BankAccount>(`/accounts/${id}/status`, { status }),
+        api.put<BankAccount>(`/accounts/${id}/status?status=${status}`, {}),
     delete: (id: number) => api.delete(`/accounts/${id}`),
-    search: (query: string) => api.get<BankAccount[]>(`/accounts/search?query=${encodeURIComponent(query)}`),
+    search: (params: {
+        accountNumber?: string;
+        accountType?: string;
+        status?: string;
+    }) => {
+        const queryParams = new URLSearchParams();
+        if (params.accountNumber) queryParams.append('accountNumber', params.accountNumber);
+        if (params.accountType) queryParams.append('accountType', params.accountType);
+        if (params.status) queryParams.append('status', params.status);
+        return api.get<BankAccount[]>(`/accounts/search?${queryParams.toString()}`);
+    },
 };
