@@ -17,8 +17,8 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve the application using nginx
-# FROM nginx:alpine
-FROM registry.redhat.io/rhel9/nginx-124:9.5-1732617836
+FROM nginx:alpine
+# FROM registry.redhat.io/rhel9/nginx-124:9.5-1732617836
 
 # Copy built files from build stage
 COPY --from=build /app/dist /usr/share/nginx/html
