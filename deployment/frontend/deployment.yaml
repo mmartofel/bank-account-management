@@ -49,19 +49,6 @@ spec:
               port: 8080
             initialDelaySeconds: 15
             periodSeconds: 20
-          securityContext:
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            runAsUser: 1001
-            runAsGroup: 1001
-            capabilities:
-              drop: ["ALL"]
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp-volume
-      volumes:
-        - name: tmp-volume
-          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
