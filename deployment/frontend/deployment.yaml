@@ -75,6 +75,6 @@ spec:
     name: frontend
   port:
     targetPort: 8080
-  tls:
-    termination: edge
-    insecureEdgeTerminationPolicy: Redirect
+#  tls:
+#    termination: edge
+#    insecureEdgeTerminationPolicy: Redirect
