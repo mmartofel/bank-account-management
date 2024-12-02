@@ -1,12 +1,8 @@
 import axios from 'axios';
 import { Transaction, TransactionFilters, PaginatedResponse } from '../types/transaction';
 
-const API_BASE_URL = process.env.VITE_API_BASE_URL || 'http://backend:8080/api';
-
-console.log('API_BASE_URL is currently set to:', API_BASE_URL);
-
 const api = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: '/api',
     headers: {
         'Content-Type': 'application/json',
     },
