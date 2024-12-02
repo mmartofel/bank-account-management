@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    app.openshift.io/vcs-uri: 'https://github.com/mmartofel/kuberneter-probes/tree/main/deployment/postgres'
+    app.openshift.io/vcs-uri: 'https://github.com/mmartofel/bank-account-management.git'
   labels:
     app: postgres
     app.kubernetes.io/component: database
@@ -20,21 +20,32 @@ spec:
       labels:
         app: postgres
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
-      - name: postgres
-        imagePullPolicy: ifNotPresent
-        image: registry.redhat.io/rhel8/postgresql-12:latest
-        ports:
-          - containerPort: 5432
-            protocol: TCP
-        envFrom:
-          - configMapRef:
-             name: configmap-postgres
-        resources:
-          requests:
-            memory: "32Mi"
-            cpu: "100m"
-          limits:
-            memory: "64Mi"
-            cpu: "200m"
-
+        - name: postgres
+          image: registry.redhat.io/rhel8/postgresql-12:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: configmap-postgres
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "100m"
+            limits:
+              memory: "64Mi"
+              cpu: "200m"
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-data
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+      nodeSelector:
+        kubernetes.io/os: linux

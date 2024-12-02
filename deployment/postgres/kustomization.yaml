@@ -1,4 +1,5 @@
 resources:
-- configmap-postgres.yaml
-- deployment.yaml
-- service.yaml
+  - persistentvolumeclaim.yaml
+  - deployment.yaml
+  - service.yaml
+  - configmap-postgres.yaml

@@ -5,8 +5,9 @@ metadata:
     app.openshift.io/connects-to: 'backend'
     app.openshift.io/vcs-uri: 'https://github.com/mmartofel/bank-account-management.git'
   labels:
-    app: backend
+    app: frontend
     app.kubernetes.io/component: frontend
+    app.kubernetes.io/name: frontend
     app.kubernetes.io/instance: frontend
     app.kubernetes.io/part-of: BANK_ACCOUNT_MANAGEMENT
     app.openshift.io/runtime: nginx
@@ -27,9 +28,10 @@ spec:
       containers:
         - name: frontend
           image: quay.io/mmartofe/bank-account-management-frontend:latest
-          imagePullPolicy: ifnotpresent
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
+              protocol: TCP
           resources:
             requests:
               memory: "64Mi"
@@ -52,3 +54,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: configmap-frontend
+      nodeSelector:
+        kubernetes.io/os: linux

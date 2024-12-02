@@ -1,14 +1,16 @@
 resources:
 # Postgres
-- configmap-postgres.yaml
-- deployment.yaml
-- service.yaml
+- ./postgres/persistentvolumeclaim.yaml
+- ./postgres/configmap-postgres.yaml
+- ./postgres/deployment.yaml
+- ./postgres/service.yaml
 # Backend
-- configmap-backend.yaml
-- deployment.yaml
-- service.yaml
+- ./backend/configmap-backend.yaml
+- ./backend/deployment.yaml
+- ./backend/service.yaml
+- ./backend/route.yaml
 # Frontend
-- configmap-frontend.yaml
-- deployment.yaml
-- service.yaml
-- route.yaml
+- ./frontend/configmap-frontend.yaml
+- ./frontend/deployment.yaml
+- ./frontend/service.yaml
+- ./frontend/route.yaml

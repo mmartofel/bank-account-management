@@ -7,11 +7,9 @@ metadata:
     app.kubernetes.io/component: backend
     app.kubernetes.io/instance: backend
 spec:
-  ports:
-  - name: http-8080
-    port: 8080
-    targetPort: 8080
   selector:
-    deployment: backend
-  type: ClusterIP
-  sessionAffinity: None    
+    app: backend
+  ports:
+    - name: http-8080
+      port: 8080
+      targetPort: 8080

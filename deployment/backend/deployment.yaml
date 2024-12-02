@@ -2,11 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    app.openshift.io/connects-to: 'postges'
-    app.openshift.io/vcs-uri: 'https://github.com/mmartofel/kuberneter-backend.git'
+    app.openshift.io/connects-to: 'postgres'
+    app.openshift.io/vcs-uri: 'https://github.com/mmartofel/bank-account-management.git'
   labels:
     app: backend
     app.kubernetes.io/component: backend
+    app.kubernetes.io/name: backend
     app.kubernetes.io/instance: backend
     app.kubernetes.io/part-of: BANK_ACCOUNT_MANAGEMENT
     app.openshift.io/runtime: quarkus
@@ -15,54 +16,59 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      deployment: backend
+      app: backend
   template:
     metadata:
-     labels:
-      deployment: backend
+      labels:
+        app: backend
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - env:
         envFrom:
           - configMapRef:
               name: configmap-backend
-        startupProbe:
-            httpGet:
-              path: /q/health/started
-              port: 8080
-              scheme: HTTP
-            timeoutSeconds: 1
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 3
-        livenessProbe:
-            httpGet:
-              path: /q/health/live
-              port: 8080
-              scheme: HTTP
-            timeoutSeconds: 1
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 3
-        readinessProbe:
-            httpGet:
-              path: /q/health/ready
-              port: 8080
-              scheme: HTTP
-            timeoutSeconds: 3
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 3
-        image: quay.io/mmartofe/bank-account-management-backend:main
-        imagePullPolicy: ifNotPresent
         name: backend
+        image: quay.io/mmartofe/bank-account-management-backend:main
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
           protocol: TCP
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
             memory: "512Mi"
             cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        readinessProbe:
+          httpGet:
+            path: /q/health/ready
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /q/health/live
+            port: 8080
+          initialDelaySeconds: 15
+          timeoutSeconds: 3
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /q/health/started
+            port: 8080
+            scheme: HTTP
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+      nodeSelector:
+        kubernetes.io/os: linux
