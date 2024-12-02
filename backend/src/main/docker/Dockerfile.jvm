@@ -46,8 +46,11 @@ COPY --from=build /workspace/app/bank-account-management/backend/target/quarkus-
 COPY --from=build /workspace/app/bank-account-management/backend/target/quarkus-app/app/ /deployments/app/
 COPY --from=build /workspace/app/bank-account-management/backend/target/quarkus-app/quarkus/ /deployments/quarkus/
 
-# ENV JAVA_OPTS="-Dquarkus.profile=ocp -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+# Explicitly copy resources directory
+COPY --from=build /workspace/app/bank-account-management/backend/src/main/resources/ /deployments/resources/
+
+# Set OpenShift profile and other Java options
+ENV JAVA_OPTS="-Dquarkus.profile=ocp -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Dquarkus.hibernate-orm.sql-load-script=/deployments/resources/import.sql"
 ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
 
 EXPOSE 8080
