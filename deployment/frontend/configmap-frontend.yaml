@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: frontend-config
 data:
-  VITE_API_BASE_URL: "http://backend-pko.apps.kilo.89krw.gcp.redhatworkshops.io/api"
+  VITE_API_BASE_URL: "http://backend:8080/api"

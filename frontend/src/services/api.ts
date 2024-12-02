@@ -4,6 +4,8 @@ import { User, UserSearchResult } from '../types/User';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+console.log('API_BASE_URL is currently set to:', API_BASE_URL);
+
 const api = axios.create({
     baseURL: API_BASE_URL,
     headers: {
