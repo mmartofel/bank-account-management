@@ -20,7 +20,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://backend:8080',
+        target: process.env.VITE_API_BASE_URL || 'http://backend:8080',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
         configure: (proxy) => {
@@ -40,4 +40,7 @@ export default defineConfig({
   preview: {
     port: 8080,
   },
+  define: {
+    'process.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL || 'http://backend:8080/api')
+  }
 })

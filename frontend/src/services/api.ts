@@ -2,7 +2,7 @@ import axios from 'axios';
 import { BankAccount } from '../types/BankAccount';
 import { User, UserSearchResult } from '../types/User';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = process.env.VITE_API_BASE_URL || 'http://backend:8080/api';
 
 console.log('API_BASE_URL is currently set to:', API_BASE_URL);
 
