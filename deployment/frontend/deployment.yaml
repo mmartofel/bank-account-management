@@ -8,7 +8,7 @@ metadata:
     app: backend
     app.kubernetes.io/component: frontend
     app.kubernetes.io/instance: frontend
-    app.kubernetes.io/part-of: FRONTEND_SERVICE
+    app.kubernetes.io/part-of: BANK_ACCOUNT_MANAGEMENT
     app.openshift.io/runtime: nginx
   name: frontend
 spec:
@@ -27,7 +27,7 @@ spec:
       containers:
         - name: frontend
           image: quay.io/mmartofe/bank-account-management-frontend:latest
-          imagePullPolicy: Always
+          imagePullPolicy: ifnotpresent
           ports:
             - containerPort: 8080
           resources:
@@ -51,30 +51,4 @@ spec:
             periodSeconds: 20
           envFrom:
             - configMapRef:
-                name: frontend-config
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: frontend
-spec:
-  selector:
-    app: frontend
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: frontend
-spec:
-  to:
-    kind: Service
-    name: frontend
-  port:
-    targetPort: 8080
-#  tls:
-#    termination: edge
-#    insecureEdgeTerminationPolicy: Redirect
+                name: configmap-frontend

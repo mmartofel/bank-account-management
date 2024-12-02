@@ -7,7 +7,7 @@ metadata:
     app: postgres
     app.kubernetes.io/component: database
     app.kubernetes.io/name: postgres
-    app.kubernetes.io/part-of: DATA_SUBSYSTEM
+    app.kubernetes.io/part-of: BANK_ACCOUNT_MANAGEMENT
     app.openshift.io/runtime: postgresql
   name: postgres
 spec:
@@ -22,14 +22,14 @@ spec:
     spec:
       containers:
       - name: postgres
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: ifNotPresent
         image: registry.redhat.io/rhel8/postgresql-12:latest
         ports:
           - containerPort: 5432
             protocol: TCP
         envFrom:
           - configMapRef:
-             name: postgres-setup-configmap
+             name: configmap-postgres
         resources:
           requests:
             memory: "32Mi"

@@ -8,7 +8,7 @@ metadata:
     app: backend
     app.kubernetes.io/component: backend
     app.kubernetes.io/instance: backend
-    app.kubernetes.io/part-of: QUARKUS_API_SERVICE
+    app.kubernetes.io/part-of: BANK_ACCOUNT_MANAGEMENT
     app.openshift.io/runtime: quarkus
   name: backend
 spec:
@@ -54,7 +54,7 @@ spec:
             successThreshold: 1
             failureThreshold: 3
         image: quay.io/mmartofe/bank-account-management-backend:main
-        imagePullPolicy: Always
+        imagePullPolicy: ifNotPresent
         name: backend
         ports:
         - containerPort: 8080
