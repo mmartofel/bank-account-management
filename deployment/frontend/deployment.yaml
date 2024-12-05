@@ -28,7 +28,7 @@ spec:
       containers:
         - name: frontend
           image: quay.io/mmartofe/bank-account-management-frontend:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
               protocol: TCP

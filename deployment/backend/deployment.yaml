@@ -32,7 +32,7 @@ spec:
               name: configmap-backend
         name: backend
         image: quay.io/mmartofe/bank-account-management-backend:main
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
           protocol: TCP

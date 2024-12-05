@@ -26,7 +26,7 @@ spec:
       containers:
         - name: postgres
           image: registry.redhat.io/rhel8/postgresql-12:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 5432
               protocol: TCP
