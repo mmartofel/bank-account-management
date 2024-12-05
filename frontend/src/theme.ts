@@ -3,12 +3,12 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
     palette: {
         primary: {
-            main: '#0C1C5C', // PKO BP dark blue
+            main: '#0C1C5C', // APEX Bank dark blue
             light: '#1E3A8A',
             dark: '#091444',
         },
         secondary: {
-            main: '#E31837', // PKO BP red
+            main: '#E31837', // APEX Bank red
             light: '#FF1F41',
             dark: '#C41430',
         },

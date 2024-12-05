@@ -139,7 +139,7 @@ export const Footer: React.FC = () => {
               fontSize: '0.75rem',
             }}
           >
-            {new Date().getFullYear()} PKO Bank Polski SA. All rights reserved.
+            {new Date().getFullYear()} APEX Bank Corporation. All rights reserved.
           </Typography>
           <Typography
             variant="body2"
@@ -149,7 +149,7 @@ export const Footer: React.FC = () => {
               mt: 1,
             }}
           >
-            PKO IKO Lite is a simplified version of the PKO BP banking system.
+            APEX Bank Online is a modern digital banking platform.
           </Typography>
         </Box>
       </Container>

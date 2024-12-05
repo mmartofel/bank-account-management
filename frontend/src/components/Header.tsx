@@ -44,7 +44,7 @@ export const Header = () => {
             }}
             onClick={() => navigate('/')}
           >
-            PKO IKO Lite
+            APEX Bank Online
           </Typography>
 
           {/* Mobile menu */}
@@ -100,7 +100,7 @@ export const Header = () => {
             }}
             onClick={() => navigate('/')}
           >
-            PKO IKO Lite
+            APEX Bank Online
           </Typography>
 
           {/* Desktop menu */}
@@ -121,7 +121,7 @@ export const Header = () => {
                   },
                 }}
               >
-                {page.name}
+                {page.name === 'History' ? 'APEX Online' : page.name}
               </Button>
             ))}
           </Box>
