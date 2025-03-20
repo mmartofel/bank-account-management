@@ -44,7 +44,7 @@ export const Header = () => {
             }}
             onClick={() => navigate('/')}
           >
-            APEX Bank Online
+            GOonline
           </Typography>
 
           {/* Mobile menu */}
@@ -100,7 +100,7 @@ export const Header = () => {
             }}
             onClick={() => navigate('/')}
           >
-            APEX Bank Online
+            GOonline
           </Typography>
 
           {/* Desktop menu */}
@@ -121,7 +121,7 @@ export const Header = () => {
                   },
                 }}
               >
-                {page.name === 'History' ? 'APEX Online' : page.name}
+                {page.name === 'History' ? 'GOonline' : page.name}
               </Button>
             ))}
           </Box>
@@ -140,7 +140,7 @@ export const Header = () => {
                 },
               }}
             >
-              iPKO
+              GOonline
             </Button>
           </Box>
         </Toolbar>
